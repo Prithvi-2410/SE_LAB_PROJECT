@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loan Approval System | Educational Demonstration</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="navbar">
+        <div class="nav-container">
+            <a href="{{ url_for('index') }}" class="logo">
+                <span class="logo-icon">🏦</span>
+                <span class="logo-text">LoanGuard <span class="badge-proto">College PBL</span></span>
+            </a>
+            <nav class="nav-links">
+                <a href="{{ url_for('index') }}" class="nav-link active">Home</a>
+                <a href="{{ url_for('apply_loan') }}" class="btn btn-primary nav-btn">Apply Now</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <!-- Hero Section -->
+        <section class="hero-section">
+            <div class="hero-container">
+                <div class="hero-content">
+                    <span class="pill-tag">Automated Loan Assessment Prototype</span>
+                    <h1 class="hero-title">Transparent, Fast &amp; Reliable Loan Eligibility Evaluation</h1>
+                    <p class="hero-subtitle">
+                        Submit your loan application with supporting documentation, verify policy eligibility against demonstration rules, and calculate precise monthly EMI repayments instantly.
+                    </p>
+                    <div class="hero-actions">
+                        <a href="{{ url_for('apply_loan') }}" class="btn btn-primary btn-lg">Start Application &rarr;</a>
+                        <a href="#rules-section" class="btn btn-secondary btn-lg">View Criteria</a>
+                    </div>
+                </div>
+                <div class="hero-card">
+                    <div class="feature-card-highlight">
+                        <h3>Why LoanGuard?</h3>
+                        <ul class="feature-list">
+                            <li><span class="check-icon">&#10003;</span> Secure document validation (PDF, JPG, PNG &le; 5MB)</li>
+                            <li><span class="check-icon">&#10003;</span> Real-time demonstration eligibility assessment</li>
+                            <li><span class="check-icon">&#10003;</span> Accurate mathematical EMI &amp; total interest calculation</li>
+                            <li><span class="check-icon">&#10003;</span> SQLite transactional record persistence</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Eligibility Rules Section -->
+        <section id="rules-section" class="rules-section">
+            <div class="section-container">
+                <h2 class="section-title">Configurable Demonstration Eligibility Criteria</h2>
+                <p class="section-subtitle">
+                    Our educational prototype evaluates submissions using structured institutional rule sets.
+                </p>
+
+                <div class="grid-cards">
+                    <div class="card rule-card">
+                        <div class="rule-icon">&#128100;</div>
+                        <h3>Applicant Age</h3>
+                        <p class="rule-spec">{{ rules.min_age }} – {{ rules.max_age }} Years</p>
+                        <p class="rule-desc">Applicants must fall strictly within the working age bracket at the time of submission.</p>
+                    </div>
+
+                    <div class="card rule-card">
+                        <div class="rule-icon">&#128181;</div>
+                        <h3>Monthly Income</h3>
+                        <p class="rule-spec">&ge; ₹{{ "{:,.0f}".format(rules.min_monthly_income) }}</p>
+                        <p class="rule-desc">Demonstrated regular income to substantiate repayment capability.</p>
+                    </div>
+
+                    <div class="card rule-card">
+                        <div class="rule-icon">&#128202;</div>
+                        <h3>Credit Score</h3>
+                        <p class="rule-spec">&ge; {{ rules.min_credit_score }}</p>
+                        <p class="rule-desc">Credit bureau benchmark score (range 300 to 900) required for qualification.</p>
+                    </div>
+
+                    <div class="card rule-card">
+                        <div class="rule-icon">&#9878;</div>
+                        <h3>Max Loan Multiplier</h3>
+                        <p class="rule-spec">&le; {{ rules.max_loan_to_income_ratio|int }}x Monthly Income</p>
+                        <p class="rule-desc">Requested loan ceiling is capped as a responsible multiple of verified monthly income.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Process Workflow Section -->
+        <section class="workflow-section">
+            <div class="section-container">
+                <h2 class="section-title">How the Prototype Works</h2>
+                <div class="workflow-steps">
+                    <div class="step-card">
+                        <div class="step-number">1</div>
+                        <h4>Fill Application</h4>
+                        <p>Provide your personal details, financial figures, and loan parameters.</p>
+                    </div>
+                    <div class="step-arrow">&rarr;</div>
+                    <div class="step-card">
+                        <div class="step-number">2</div>
+                        <h4>Upload Document</h4>
+                        <p>Submit identity/income proof (PDF, JPG, PNG &le; 5 MB) safely.</p>
+                    </div>
+                    <div class="step-arrow">&rarr;</div>
+                    <div class="step-card">
+                        <div class="step-number">3</div>
+                        <h4>Instant Assessment</h4>
+                        <p>Receive rule-based eligibility evaluation and comprehensive EMI breakdown.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="disclaimer-box">
+                <strong>Academic Prototype Notice:</strong> This software is an individual college PBL demonstration project. Sample eligibility rules and EMI calculations are provided for academic illustration only and do not constitute actual banking decisions or financial commitments. No sensitive personal data (Aadhaar, PAN, passwords) should be uploaded.
+            </div>
+            <p class="footer-copy">&copy; 2026 Loan Approval System. Built with Flask, SQLite, and Vanilla JS.</p>
+        </div>
+    </footer>
+</body>
+</html>

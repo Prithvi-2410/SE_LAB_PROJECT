@@ -1,0 +1,28 @@
+# Virtual Environment
+**/venv/
+**/.venv/
+**/env/
+
+# Python cache
+**/__pycache__/
+**/*.py[cod]
+**/*$py.class
+**/.pytest_cache/
+
+# Uploaded documents
+LoanApprovalSystem/uploads/*
+!LoanApprovalSystem/uploads/.gitkeep
+
+# SQLite database
+LoanApprovalSystem/instance/*
+!LoanApprovalSystem/instance/.gitkeep
+**/*.db
+**/*.sqlite3
+
+# Environment secrets
+**/.env
+**/.env.local
+
+# IDE
+.vscode/
+.idea/

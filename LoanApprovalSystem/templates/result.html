@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Application Result | LoanGuard Prototype</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="navbar">
+        <div class="nav-container">
+            <a href="{{ url_for('index') }}" class="logo">
+                <span class="logo-icon">🏦</span>
+                <span class="logo-text">LoanGuard <span class="badge-proto">College PBL</span></span>
+            </a>
+            <nav class="nav-links">
+                <a href="{{ url_for('index') }}" class="nav-link">Home</a>
+                <a href="{{ url_for('apply_loan') }}" class="btn btn-primary nav-btn">New Application</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div class="result-container">
+            <!-- Header Card with Application ID -->
+            <div class="result-header-card">
+                <div class="result-meta">
+                    <span class="ref-label">Application Reference ID:</span>
+                    <span class="ref-code" id="appRefCode">{{ app_data.application_id }}</span>
+                </div>
+                <div class="result-timestamp">
+                    <span>Submitted on: {{ app_data.created_at }}</span>
+                </div>
+            </div>
+
+            <!-- Eligibility Outcome Card -->
+            <div class="outcome-card {% if app_data.is_eligible == 1 %}outcome-approved{% else %}outcome-rejected{% endif %}">
+                <div class="outcome-header">
+                    <div class="outcome-icon">
+                        {% if app_data.is_eligible == 1 %}
+                            &#9989;
+                        {% else %}
+                            &#10060;
+                        {% endif %}
+                    </div>
+                    <div>
+                        <span class="outcome-pill">Demonstration Rule Evaluation</span>
+                        <h2 class="outcome-title">
+                            {% if app_data.is_eligible == 1 %}
+                                Application Eligible
+                            {% else %}
+                                Application Not Eligible
+                            {% endif %}
+                        </h2>
+                    </div>
+                </div>
+
+                <div class="outcome-reasons-box">
+                    <h4>Evaluation Details:</h4>
+                    <ul class="reasons-list">
+                        {% for reason in app_data.reasons_list %}
+                            <li>{{ reason }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Repayment & Loan Financial Summary -->
+            <div class="financial-summary-grid">
+                <!-- EMI & Repayment Card -->
+                <div class="summary-card highlight-card">
+                    <h3 class="card-title">Loan Repayment Summary (Module 2)</h3>
+                    
+                    <div class="emi-primary-display">
+                        <span class="emi-label">Monthly EMI Installment</span>
+                        <span class="emi-amount" id="displayEmi">₹{{ "{:,.2f}".format(app_data.monthly_emi) }}</span>
+                    </div>
+
+                    <div class="stat-table">
+                        <div class="stat-row">
+                            <span class="stat-name">Principal Loan Amount</span>
+                            <span class="stat-value">₹{{ "{:,.2f}".format(app_data.loan_amount) }}</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-name">Annual Interest Rate</span>
+                            <span class="stat-value">{{ app_data.interest_rate }}%</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-name">Loan Tenure</span>
+                            <span class="stat-value">{{ app_data.tenure_months }} Months</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-name">Total Interest Payable</span>
+                            <span class="stat-value text-accent">₹{{ "{:,.2f}".format(app_data.total_interest) }}</span>
+                        </div>
+                        <div class="stat-row total-repayment-row">
+                            <span class="stat-name">Total Repayment Amount</span>
+                            <span class="stat-value stat-total">₹{{ "{:,.2f}".format(app_data.total_repayment) }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Applicant Profile & Document Summary -->
+                <div class="summary-card">
+                    <h3 class="card-title">Applicant &amp; Upload Details (Module 1)</h3>
+                    <div class="stat-table">
+                        <div class="stat-row">
+                            <span class="stat-name">Applicant Name</span>
+                            <span class="stat-value">{{ app_data.full_name }}</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-name">Age</span>
+                            <span class="stat-value">{{ app_data.age }} years</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-name">Monthly Income</span>
+                            <span class="stat-value">₹{{ "{:,.2f}".format(app_data.monthly_income) }}</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-name">Credit Score</span>
+                            <span class="stat-value">{{ app_data.credit_score }}</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-name">Submitted Document</span>
+                            <span class="stat-value text-muted">&#128196; {{ app_data.document_original_name }}</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-name">Secure Storage Reference</span>
+                            <span class="stat-value text-mono">{{ app_data.document_filename }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action buttons -->
+            <div class="result-actions">
+                <a href="{{ url_for('apply_loan') }}" class="btn btn-primary btn-lg">&#43; Submit Another Application</a>
+                <a href="{{ url_for('index') }}" class="btn btn-secondary btn-lg">&larr; Return to Home Page</a>
+            </div>
+
+            <!-- Disclaimer note -->
+            <div class="academic-note-box">
+                <p><strong>Demonstration Note:</strong> This assessment was performed according to educational rule thresholds. In a production environment, interest rates, risk tiers, and approval decisions would be determined by underwriting policies and credit bureaus.</p>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-container">
+            <p class="footer-copy">&copy; 2026 Loan Approval System. Academic PBL Prototype.</p>
+        </div>
+    </footer>
+</body>
+</html>

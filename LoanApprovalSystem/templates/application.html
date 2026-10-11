@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loan Application | LoanGuard Prototype</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="navbar">
+        <div class="nav-container">
+            <a href="{{ url_for('index') }}" class="logo">
+                <span class="logo-icon">🏦</span>
+                <span class="logo-text">LoanGuard <span class="badge-proto">College PBL</span></span>
+            </a>
+            <nav class="nav-links">
+                <a href="{{ url_for('index') }}" class="nav-link">Home</a>
+                <a href="{{ url_for('apply_loan') }}" class="btn btn-primary nav-btn active">Application Form</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div class="form-layout-container">
+            <!-- Left: Application Form -->
+            <div class="form-column">
+                <div class="form-header">
+                    <span class="pill-tag">Module 1 &amp; 2</span>
+                    <h2>Loan Application Form</h2>
+                    <p class="form-subtext">Complete the fields below. All inputs are strictly validated on the server.</p>
+                </div>
+
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category }}">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+
+                {% if errors.get('general') %}
+                    <div class="alert alert-danger">
+                        {{ errors.general }}
+                    </div>
+                {% endif %}
+
+                <form action="{{ url_for('apply_loan') }}" method="POST" enctype="multipart/form-data" id="loanForm" novalidate>
+                    <!-- Section 1: Personal Details -->
+                    <fieldset class="form-section">
+                        <legend class="section-legend">1. Personal Information</legend>
+                        
+                        <div class="form-group">
+                            <label for="full_name" class="form-label">
+                                Full Name <span class="required-star">*</span>
+                            </label>
+                            <input 
+                                type="text" 
+                                id="full_name" 
+                                name="full_name" 
+                                class="form-control {% if errors.get('full_name') %}is-invalid{% endif %}" 
+                                placeholder="e.g. Prithvi Raj" 
+                                value="{{ form_data.get('full_name', '') }}" 
+                                required
+                            >
+                            {% if errors.get('full_name') %}
+                                <div class="invalid-feedback">{{ errors.full_name }}</div>
+                            {% else %}
+                                <span class="form-hint">2-100 characters, letters only.</span>
+                            {% endif %}
+                        </div>
+
+                        <div class="form-group">
+                            <label for="age" class="form-label">
+                                Age (Years) <span class="required-star">*</span>
+                            </label>
+                            <input 
+                                type="number" 
+                                id="age" 
+                                name="age" 
+                                class="form-control {% if errors.get('age') %}is-invalid{% endif %}" 
+                                placeholder="e.g. 28" 
+                                min="18" 
+                                max="100" 
+                                value="{{ form_data.get('age', '') }}" 
+                                required
+                            >
+                            {% if errors.get('age') %}
+                                <div class="invalid-feedback">{{ errors.age }}</div>
+                            {% else %}
+                                <span class="form-hint">Valid human age (18-100). Note: demonstration eligibility rule requires 21-60.</span>
+                            {% endif %}
+                        </div>
+                    </fieldset>
+
+                    <!-- Section 2: Financial Profile -->
+                    <fieldset class="form-section">
+                        <legend class="section-legend">2. Financial Details</legend>
+
+                        <div class="form-group">
+                            <label for="monthly_income" class="form-label">
+                                Monthly Income (₹) <span class="required-star">*</span>
+                            </label>
+                            <div class="input-prefix-wrapper">
+                                <span class="currency-prefix">₹</span>
+                                <input 
+                                    type="number" 
+                                    id="monthly_income" 
+                                    name="monthly_income" 
+                                    class="form-control has-prefix {% if errors.get('monthly_income') %}is-invalid{% endif %}" 
+                                    placeholder="e.g. 45000" 
+                                    step="0.01" 
+                                    min="1" 
+                                    value="{{ form_data.get('monthly_income', '') }}" 
+                                    required
+                                >
+                            </div>
+                            {% if errors.get('monthly_income') %}
+                                <div class="invalid-feedback">{{ errors.monthly_income }}</div>
+                            {% else %}
+                                <span class="form-hint">Net monthly in-hand earnings. Eligibility minimum is ₹25,000.</span>
+                            {% endif %}
+                        </div>
+
+                        <div class="form-group">
+                            <label for="credit_score" class="form-label">
+                                Credit Score (CIBIL/Bureau) <span class="required-star">*</span>
+                            </label>
+                            <input 
+                                type="number" 
+                                id="credit_score" 
+                                name="credit_score" 
+                                class="form-control {% if errors.get('credit_score') %}is-invalid{% endif %}" 
+                                placeholder="e.g. 740" 
+                                min="300" 
+                                max="900" 
+                                value="{{ form_data.get('credit_score', '') }}" 
+                                required
+                            >
+                            {% if errors.get('credit_score') %}
+                                <div class="invalid-feedback">{{ errors.credit_score }}</div>
+                            {% else %}
+                                <span class="form-hint">Standard range: 300 to 900. Benchmark minimum is 650.</span>
+                            {% endif %}
+                        </div>
+                    </fieldset>
+
+                    <!-- Section 3: Loan Parameters -->
+                    <fieldset class="form-section">
+                        <legend class="section-legend">3. Requested Loan Parameters</legend>
+
+                        <div class="form-group">
+                            <label for="loan_amount" class="form-label">
+                                Requested Loan Amount (₹) <span class="required-star">*</span>
+                            </label>
+                            <div class="input-prefix-wrapper">
+                                <span class="currency-prefix">₹</span>
+                                <input 
+                                    type="number" 
+                                    id="loan_amount" 
+                                    name="loan_amount" 
+                                    class="form-control has-prefix {% if errors.get('loan_amount') %}is-invalid{% endif %}" 
+                                    placeholder="e.g. 300000" 
+                                    step="0.01" 
+                                    min="1000" 
+                                    value="{{ form_data.get('loan_amount', '') }}" 
+                                    required
+                                >
+                            </div>
+                            {% if errors.get('loan_amount') %}
+                                <div class="invalid-feedback">{{ errors.loan_amount }}</div>
+                            {% else %}
+                                <span class="form-hint">Must not exceed 10 times monthly income for eligibility.</span>
+                            {% endif %}
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group col-half">
+                                <label for="interest_rate" class="form-label">
+                                    Annual Interest Rate (%) <span class="required-star">*</span>
+                                </label>
+                                <input 
+                                    type="number" 
+                                    id="interest_rate" 
+                                    name="interest_rate" 
+                                    class="form-control {% if errors.get('interest_rate') %}is-invalid{% endif %}" 
+                                    placeholder="e.g. 8.5" 
+                                    step="0.01" 
+                                    min="0" 
+                                    max="100" 
+                                    value="{{ form_data.get('interest_rate', '') }}" 
+                                    required
+                                >
+                                {% if errors.get('interest_rate') %}
+                                    <div class="invalid-feedback">{{ errors.interest_rate }}</div>
+                                {% else %}
+                                    <span class="form-hint">Annual % (supports 0% interest).</span>
+                                {% endif %}
+                            </div>
+
+                            <div class="form-group col-half">
+                                <label for="tenure_months" class="form-label">
+                                    Tenure (Months) <span class="required-star">*</span>
+                                </label>
+                                <input 
+                                    type="number" 
+                                    id="tenure_months" 
+                                    name="tenure_months" 
+                                    class="form-control {% if errors.get('tenure_months') %}is-invalid{% endif %}" 
+                                    placeholder="e.g. 24" 
+                                    min="1" 
+                                    max="360" 
+                                    value="{{ form_data.get('tenure_months', '') }}" 
+                                    required
+                                >
+                                {% if errors.get('tenure_months') %}
+                                    <div class="invalid-feedback">{{ errors.tenure_months }}</div>
+                                {% else %}
+                                    <span class="form-hint">Number of installments (1-360).</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <!-- Section 4: Document Upload -->
+                    <fieldset class="form-section">
+                        <legend class="section-legend">4. Supporting Document Upload</legend>
+
+                        <div class="form-group">
+                            <label for="document" class="form-label">
+                                Identity / Income Proof Document <span class="required-star">*</span>
+                            </label>
+                            <input 
+                                type="file" 
+                                id="document" 
+                                name="document" 
+                                class="file-input {% if errors.get('document') %}is-invalid{% endif %}" 
+                                accept=".pdf,.jpg,.jpeg,.png" 
+                                required
+                            >
+                            {% if errors.get('document') %}
+                                <div class="invalid-feedback">{{ errors.document }}</div>
+                            {% endif %}
+                            <div class="file-upload-help">
+                                <span>&#128206; Allowed formats: <strong>PDF, JPG, JPEG, PNG</strong></span>
+                                <span>&#9888; Maximum upload size: <strong>5 MB</strong></span>
+                                <span class="privacy-alert">&#128274; Do not upload real Aadhaar, PAN or sensitive credentials. Use dummy demonstration documents.</span>
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary btn-submit" id="submitBtn">
+                            Submit Application &amp; Check Eligibility &rarr;
+                        </button>
+                        <a href="{{ url_for('index') }}" class="btn btn-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Right: Interactive Live Calculator Sidebar -->
+            <aside class="calculator-sidebar">
+                <div class="calc-card">
+                    <div class="calc-header">
+                        <h3>Estimated EMI Calculator</h3>
+                        <span class="calc-live-pill">Live Preview</span>
+                    </div>
+                    <p class="calc-description">
+                        Instant preview based on the values typed in your form.
+                    </p>
+
+                    <div class="calc-metric-box">
+                        <span class="calc-metric-label">Estimated Monthly EMI</span>
+                        <span class="calc-metric-value" id="previewEmi">₹0.00</span>
+                    </div>
+
+                    <div class="calc-breakdown">
+                        <div class="breakdown-row">
+                            <span>Principal Amount</span>
+                            <span id="previewPrincipal">₹0.00</span>
+                        </div>
+                        <div class="breakdown-row">
+                            <span>Total Interest</span>
+                            <span id="previewInterest">₹0.00</span>
+                        </div>
+                        <div class="breakdown-row total-row">
+                            <span>Total Repayment</span>
+                            <span id="previewTotal">₹0.00</span>
+                        </div>
+                    </div>
+
+                    <div class="calc-info-note">
+                        <small>Standard Formula applied: <code>EMI = P &times; r &times; (1+r)ⁿ / ((1+r)ⁿ - 1)</code></small>
+                    </div>
+                </div>
+
+                <!-- Eligibility Guidelines Sidebar Box -->
+                <div class="guidelines-card">
+                    <h4>Demo Policy Checklist</h4>
+                    <ul class="checklist">
+                        <li>Age between 21 and 60</li>
+                        <li>Monthly income &ge; ₹25,000</li>
+                        <li>Credit score &ge; 650</li>
+                        <li>Loan &le; 10 &times; monthly income</li>
+                    </ul>
+                </div>
+            </aside>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-container">
+            <p class="footer-copy">&copy; 2026 Loan Approval System. Academic PBL Prototype.</p>
+        </div>
+    </footer>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
